@@ -262,6 +262,20 @@ I have two types of openai api key -
 - sk-proj-...
 - sk-admin-...
 
+### Api key Architecture
+
+Platform users/companies will:
+
+- Create account
+- Create organization
+- Add:
+  - sk-proj
+  - sk-admin
+- backend encrypts them
+- Store them dynamically in the database
+- Store encrypted keys in PostgreSQL
+- Scheduler fetches usage/costs periodically
+
 ### Potential Analytics Dimensions
 
 - Total tokens
