@@ -66,6 +66,14 @@ Dashboard
 
 ## MVP Architecture
 
+- integrations
+- analytics
+- ingestion pipelines
+- schedulers
+- forecasting systems
+
+---
+
 - Core Features
   - Authentication
   - users
@@ -95,6 +103,8 @@ Dashboard
   - realtime-ish charts
   - organization overview
   - project breakdown
+
+---
 
 ### Base Structure
 
@@ -139,12 +149,50 @@ Base app structure com/example/aitracker
     - fetch analytics
 
 - analytics
+  - business intelligence layer
+  - Example:
+    - token trends
+    - cost aggregation
+    - charts
+    - statistics
+
 - forecasting
+  - prediction engine
+  - Example:
+    - next month cost prediction
+    - token growth prediction
+    - anomaly detection
+
 - ingestion
+  - collecting data from OpenAI
+  - Example:
+    - pull usage data
+    - normalize responses
+    - save snapshots
+
 - scheduler
+  - Runs automated background jobs.
+  - Example:
+    - every 5 min:
+    - fetch latest analytics
+
 - security
+
 - common
+  - Reusable/shared utilities.
+  - Example:
+    - exceptions
+    - helpers
+    - constants
+    - utilities
+
 - config
+  - Application configuration.
+  - Example:
+    - WebClient config
+    - OpenAI config
+    - CORS config
+    - Swagger config
 
 ## Each feature/module usually contains
 
