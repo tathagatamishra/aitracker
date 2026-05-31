@@ -1,2 +1,207 @@
-# aitracker
-Track your ai usage and costs
+# Ai Usage Tracker
+
+- Track your ai usage, tokens, costs and more
+- check past and present data, analyze future prediction
+
+---
+
+- This is for
+  - individual users
+  - Mid sized
+  - Enterprise companies
+
+- This will help user by giving
+  - Visibility
+  - control
+  - Action
+  - Get insights
+  - Integration
+  - Relevant data or analytics, plan spend, usage
+
+- This backend app will be
+  - multi-user
+  - analytics-heavy
+  - scheduled-job-heavy
+  - integration-heavy
+
+- Technologies using currently
+  - SpringBoot
+  - OpenAI API
+  - PostgreSQL + Neon
+  - Render + Docker
+
+---
+
+## Pipeline
+
+```
+OpenAI APIs
+     ↓
+Background Pollers
+     ↓
+Normalize + Aggregate
+     ↓
+Store Historical Snapshots
+     ↓
+Serve Fast Dashboard Queries
+```
+
+```
+Cron Job
+   ↓
+Fetch OpenAI Usage
+   ↓
+Fetch Costs
+   ↓
+Normalize
+   ↓
+Store Snapshots
+   ↓
+Analytics API
+   ↓
+Dashboard
+```
+
+---
+
+## MVP Architecture
+
+- Core Features
+  - Authentication
+  - users
+  - organizations
+  - roles
+  - API key ownership
+
+- OpenAI Integration
+  - project keys
+  - admin keys
+  - telemetry ingestion
+
+- Analytics
+  - usage
+  - tokens
+  - requests
+  - costs
+  - model analytics
+  - trends
+
+- Forecasting
+  - future spend
+  - token growth
+  - anomaly detection
+
+- Dashboard
+  - realtime-ish charts
+  - organization overview
+  - project breakdown
+
+### Base Structure
+
+Base app structure com/example/aitracker
+
+- auth
+  - authentication logic
+  - login
+  - signup
+  - JWT token generation
+  - refresh tokens
+  - password hashing
+
+- user
+  - Manages user data
+
+- organization
+  - Example:
+    - OpenAI startup team
+    - freelance developer
+    - AI agency
+    - enterprise company
+
+- Each organization:
+  - has users
+  - has API keys
+  - has analytics
+
+- project
+
+- apikey
+  - storing keys
+  - encrypting keys
+  - validating keys
+  - key metadata
+
+- openai
+  - talks directly to OpenAI APIs
+  - Example:
+    - fetch usage
+    - fetch costs
+    - fetch analytics
+
+- analytics
+- forecasting
+- ingestion
+- scheduler
+- security
+- common
+- config
+
+## Each feature/module usually contains
+
+- Controller
+  - Receives HTTP requests.
+
+- Service
+  - Business logic.
+
+- Repository
+  - Database operations.
+
+- Entity
+  - Database table model.
+
+- DTO
+  - Request/response objects.
+
+> ### Philosophy
+
+- every module has ONE responsibility, not everything inside one controller
+
+## Phase 1
+
+- auth
+- organization
+- apikey
+- openai
+- ingestion
+
+MVP backend foundation
+
+1. User saves API key
+2. System validates key
+3. Background job fetches usage/costs
+4. Store snapshots in DB
+5. Dashboard reads from DB
+
+MVP v1
+
+- usage charts
+- token tracking
+- cost tracking
+- model analytics
+
+## Phase 2
+
+- analytics
+- forecasting
+
+---
+
+## Challenge
+
+- time-series aggregation
+- APIs are delayed
+- data is paginated
+- buckets can change
+- costs update asynchronously
+
