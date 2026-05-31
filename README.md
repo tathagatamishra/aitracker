@@ -253,3 +253,46 @@ MVP v1
 - buckets can change
 - costs update asynchronously
 
+---
+
+### OpenAI
+
+I have two types of openai api key -
+
+- sk-proj-...
+- sk-admin-...
+
+### Potential Analytics Dimensions
+
+- Total tokens
+- Input tokens
+- Output tokens
+- Cached tokens
+- Cost
+- Daily spend
+- Weekly spend
+- Monthly spend
+- Requests count
+- Model breakdown
+- Usage trends
+- Cost trends
+- Growth rate
+- Forecasting
+- Burn rate
+- Budget prediction
+- Cost anomaly detection
+- Usage anomaly detectio
+- Team/org analytics
+
+### For MVP
+
+- Total Cost
+- Total Requests
+- Total Tokens
+- Input vs Output Tokens
+- Daily Usage Graph
+- Daily Cost Graph
+- Model Breakdown
+- 30-Day Forecast
+- Budget Burn Rate
+- Cost Anomaly Alerts
