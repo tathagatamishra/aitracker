@@ -17,12 +17,14 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
+    record CreateOrganizationRequest(String name, UUID ownerUserId) {}
+
     @PostMapping
     public ResponseEntity<Organization> createOrganization(
-            @RequestParam String name,
-            @RequestParam UUID ownerUserId
+            @RequestBody CreateOrganizationRequest request
     ) {
-        Organization organization = organizationService.createOrganization(name, ownerUserId);
+        Organization organization = organizationService.createOrganization(
+                request.name(), request.ownerUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(organization);
     }
 

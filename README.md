@@ -114,7 +114,6 @@ Base app structure com/example/aitracker
   - authentication logic
   - login
   - signup
-  - JWT token generation
   - refresh tokens
   - password hashing
 

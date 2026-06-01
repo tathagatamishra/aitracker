@@ -1,5 +1,7 @@
 package com.example.aitracker.openai;
 
+import com.example.aitracker.openai.dto.OpenAICostResponse;
+import com.example.aitracker.openai.dto.OpenAIUsageResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -16,36 +18,21 @@ public class OpenAIClient {
                 .build();
     }
 
-    public String fetchUsageCompletions(String adminKey, long startTime) {
+    public OpenAIUsageResponse fetchUsageCompletions(String adminKey, long startTime) {
         return restClient.get()
-                .uri("/organization/usage/completions?start_time=" + startTime)
+                .uri("/organization/usage/completions?start_time=" + startTime + "&limit=31&bucket_width=1d")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminKey)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .body(String.class);
+                .body(OpenAIUsageResponse.class);
     }
 
-    public String fetchCosts(String adminKey, long startTime) {
+    public OpenAICostResponse fetchCosts(String adminKey, long startTime) {
         return restClient.get()
-                .uri("/organization/costs?start_time=" + startTime)
+                .uri("/organization/costs?start_time=" + startTime + "&limit=31&bucket_width=1d")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminKey)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .body(String.class);
-    }
-
-    public String testChatCompletions(String projectKey, String inputText) {
-        return restClient.post()
-                .uri("/responses")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + projectKey)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("""
-                    {
-                      "model": "gpt-4.1-mini",
-                      "input": "%s"
-                    }
-                    """.formatted(inputText.replace("\"", "\\\"")))
-                .retrieve()
-                .body(String.class);
+                .body(OpenAICostResponse.class);
     }
 }

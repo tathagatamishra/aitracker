@@ -18,14 +18,16 @@ public class ApiKeyController {
         this.apiKeyService = apiKeyService;
     }
 
+    record SaveApiKeyRequest(UUID organizationId, String provider, String keyType, String apiKey) {}
+
     @PostMapping
-    public ResponseEntity<?> saveApiKey(
-            @RequestParam UUID organizationId,
-            @RequestParam String provider,
-            @RequestParam String keyType,
-            @RequestParam String apiKey
-    ) {
-        ApiKey saved = apiKeyService.saveApiKey(organizationId, provider, keyType, apiKey);
+    public ResponseEntity<?> saveApiKey(@RequestBody SaveApiKeyRequest request) {
+        ApiKey saved = apiKeyService.saveApiKey(
+                request.organizationId(),
+                request.provider(),
+                request.keyType(),
+                request.apiKey()
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiKeyResponse(
                 saved.getId(),
