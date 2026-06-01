@@ -294,7 +294,7 @@ Platform users/companies will:
 - Burn rate
 - Budget prediction
 - Cost anomaly detection
-- Usage anomaly detectio
+- Usage anomaly detection
 - Team/org analytics
 
 ### For MVP
