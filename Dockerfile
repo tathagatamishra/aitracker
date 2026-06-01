@@ -1,8 +1,8 @@
-# ---- Build stage ----
+# Build stage
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy pom first so Maven dependency layer is cached
+# Copy pom dependency layer to be cached
 COPY pom.xml .
 RUN mvn dependency:go-offline -q
 
@@ -10,7 +10,7 @@ RUN mvn dependency:go-offline -q
 COPY src ./src
 RUN mvn clean package -DskipTests -q
 
-# ---- Run stage ----
+# Run stage
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
