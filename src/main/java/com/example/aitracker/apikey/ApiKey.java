@@ -1,6 +1,5 @@
 package com.example.aitracker.apikey;
 
-import com.example.aitracker.organization.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,9 +19,8 @@ public class ApiKey {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
-    private Organization organization;
+    @Column(name = "org_id", nullable = false)
+    private UUID orgId;
 
     @Column(nullable = false)
     private String provider; // openai, claude, gemini, etc.

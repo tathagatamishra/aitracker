@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AnalyticsService {
@@ -24,14 +23,14 @@ public class AnalyticsService {
      * Returns the summary card numbers for the org dashboard:
      * total tokens, total requests, total cost, model breakdown, daily series.
      */
-    public OrgSummary getOrgSummary(UUID organizationId, int days) {
+    public OrgSummary getOrgSummary(UUID orgId, int days) {
         long fromEpoch = Instant.now()
                 .minusSeconds((long) days * 86400)
                 .getEpochSecond();
 
         List<UsageSnapshot> snapshots = snapshotRepository
-                .findByOrganization_IdAndBucketStartTimeGreaterThanEqualOrderByBucketStartTimeAsc(
-                        organizationId, fromEpoch);
+                .findByOrgIdAndBucketStartTimeGreaterThanEqualOrderByBucketStartTimeAsc(
+                        orgId, fromEpoch);
 
         // ---- totals ----
         long totalInput = 0, totalOutput = 0, totalCached = 0, totalRequests = 0;

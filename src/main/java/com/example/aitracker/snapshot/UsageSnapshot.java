@@ -1,19 +1,26 @@
 package com.example.aitracker.snapshot;
 
-import com.example.aitracker.organization.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Raw usage/cost snapshot fetched from an AI provider (e.g. OpenAI).
+ *
+ * The {@code orgId} is a plain UUID — no FK to a local Organization entity.
+ * It matches the orgId managed by org-service.
+ */
 @Entity
-@Table(name = "usage_snapshots", indexes = {
-    @Index(name = "idx_snapshot_org_bucket", columnList = "organization_id, bucket_start_time"),
-    @Index(name = "idx_snapshot_model", columnList = "model_id")
-})
+@Table(
+    name = "usage_snapshots",
+    indexes = {
+        @Index(name = "idx_snapshot_org_bucket", columnList = "org_id, bucket_start_time"),
+        @Index(name = "idx_snapshot_model",      columnList = "model_id")
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,19 +32,19 @@ public class UsageSnapshot {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
-    private Organization organization;
+    /** Organisation that owns these metrics — plain UUID, no local FK. */
+    @Column(name = "org_id", nullable = false)
+    private UUID orgId;
 
-    // "completions", "embeddings", etc. — matches the OpenAI endpoint bucket type
+    /** "completions", "embeddings", etc. — matches the OpenAI endpoint bucket type. */
     @Column(name = "snapshot_type", nullable = false)
     private String snapshotType;
 
-    // The model string from OpenAI e.g. "gpt-4o", "gpt-4o-mini"
+    /** Model string from OpenAI, e.g. "gpt-4o", "gpt-4o-mini", or "all" for aggregate rows. */
     @Column(name = "model_id")
     private String modelId;
 
-    // Unix epoch second — the start of the bucket OpenAI returns
+    /** Unix epoch second — start of the bucket OpenAI returns. */
     @Column(name = "bucket_start_time", nullable = false)
     private Long bucketStartTime;
 
@@ -53,11 +60,11 @@ public class UsageSnapshot {
     @Column(name = "total_requests")
     private Long totalRequests;
 
-    // Cost in USD, scale 10 to handle micro-cent precision from OpenAI
+    /** Cost in USD — scale 10 to handle micro-cent precision from OpenAI. */
     @Column(name = "cost_usd", precision = 18, scale = 10)
     private BigDecimal costUsd;
 
-    // Which key type produced this row — "usage" or "cost"
+    /** Which key type produced this row: "usage" or "cost". */
     @Column(name = "source_type", nullable = false)
     private String sourceType;
 

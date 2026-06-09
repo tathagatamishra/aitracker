@@ -1,10 +1,7 @@
 package com.example.aitracker.apikey;
 
-import com.example.aitracker.organization.Organization;
-import com.example.aitracker.organization.OrganizationRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,50 +9,70 @@ import java.util.UUID;
 public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
-    private final OrganizationRepository organizationRepository;
     private final EncryptionService encryptionService;
 
     public ApiKeyService(ApiKeyRepository apiKeyRepository,
-                         OrganizationRepository organizationRepository,
                          EncryptionService encryptionService) {
         this.apiKeyRepository = apiKeyRepository;
-        this.organizationRepository = organizationRepository;
         this.encryptionService = encryptionService;
     }
 
-    public ApiKey saveApiKey(UUID organizationId, String provider, String keyType, String plainApiKey) {
-        if (apiKeyRepository.existsByOrganization_IdAndProviderAndKeyType(organizationId, provider, keyType)) {
-            throw new RuntimeException("API key already exists for this provider and key type");
+    /**
+     * Store a new API key for an org.
+     * The orgId has already been resolved from org-service by the controller.
+     *
+     * @throws IllegalStateException if a key for this provider+keyType already exists for the org
+     */
+    public ApiKey saveApiKey(UUID orgId, String provider, String keyType, String plainApiKey) {
+        if (apiKeyRepository.existsByOrgIdAndProviderAndKeyType(orgId, provider, keyType)) {
+            throw new IllegalStateException(
+                "An API key for provider=" + provider + " keyType=" + keyType +
+                " already exists for this organisation. Delete it first to replace it."
+            );
         }
-
-        Organization organization = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new RuntimeException("Organization not found"));
 
         String encryptedKey = encryptionService.encrypt(plainApiKey);
 
         ApiKey apiKey = ApiKey.builder()
-                .organization(organization)
+                .orgId(orgId)
                 .provider(provider)
                 .keyType(keyType)
                 .encryptedKey(encryptedKey)
-                .createdAt(LocalDateTime.now())
                 .build();
 
         return apiKeyRepository.save(apiKey);
     }
 
-    public List<ApiKey> getApiKeysByOrganization(UUID organizationId) {
-        return apiKeyRepository.findByOrganization_Id(organizationId);
+    public List<ApiKey> getApiKeysByOrg(UUID orgId) {
+        return apiKeyRepository.findByOrgId(orgId);
     }
 
-    public String decryptApiKey(UUID apiKeyId) {
-        ApiKey apiKey = apiKeyRepository.findById(apiKeyId)
-                .orElseThrow(() -> new RuntimeException("API key not found"));
-
-        return encryptionService.decrypt(apiKey.getEncryptedKey());
+    public void deleteApiKey(UUID apiKeyId, UUID orgId) {
+        ApiKey key = apiKeyRepository.findById(apiKeyId)
+                .orElseThrow(() -> new IllegalArgumentException("API key not found: " + apiKeyId));
+        if (!key.getOrgId().equals(orgId)) {
+            throw new SecurityException("API key does not belong to your organisation");
+        }
+        apiKeyRepository.delete(key);
     }
 
+    /** Used internally by the scheduler — returns the plaintext key for ingestion. */
     public String decryptStoredKey(ApiKey apiKey) {
         return encryptionService.decrypt(apiKey.getEncryptedKey());
+    }
+
+    /** Convenience for the controller's decrypt endpoint (admin / debug only). */
+    public String decryptApiKey(UUID apiKeyId, UUID orgId) {
+        ApiKey key = apiKeyRepository.findById(apiKeyId)
+                .orElseThrow(() -> new IllegalArgumentException("API key not found: " + apiKeyId));
+        if (!key.getOrgId().equals(orgId)) {
+            throw new SecurityException("API key does not belong to your organisation");
+        }
+        return encryptionService.decrypt(key.getEncryptedKey());
+    }
+
+    /** Returns all orgIds that have at least one key — used by the scheduler. */
+    public List<UUID> findDistinctOrgIds() {
+        return apiKeyRepository.findDistinctOrgIds();
     }
 }
