@@ -25,10 +25,11 @@
   - integration-heavy
 
 - Technologies using currently
-  - SpringBoot
-  - OpenAI API
-  - PostgreSQL + Neon
-  - Render + Docker
+  - SpringBoot for main backend
+  - FastAPI for analytics and future prediction
+  - Different AI APIs - OpenAI API, Claude, Gemini, GitHub Copilot, and more
+  - PostgreSQL TimescaleDB
+  - AWS ECS for hosting
 
 ---
 
@@ -172,7 +173,7 @@ Base app structure com/example/aitracker
 - scheduler
   - Runs automated background jobs.
   - Example:
-    - every 5 min:
+    - every 6 hours:
     - fetch latest analytics
 
 - security
